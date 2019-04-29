@@ -1,19 +1,45 @@
 package com.epam.employeesapi.services;
 
 import com.epam.commons.entity.Employee;
-import com.epam.employeesapi.exceptions.NoEmployeeFoundException;
-import org.apache.commons.lang3.StringUtils;
+import com.epam.employeesapi.repository.EmployeeDAO;
+import com.epam.employeesapi.services.interfaces.ServiceEmployee;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import static java.lang.String.format;
-
 @Service
-public class EmployeeService {
-    private List<Employee> employees = Arrays.asList(
+public class EmployeeService implements ServiceEmployee {
+
+    @Autowired
+    private EmployeeDAO employeeDAO;
+
+    @Override
+    public List<Employee> findAll() {
+        return employeeDAO.findAll();
+    }
+
+    @Override
+    public Employee add(Employee employee) {
+        return employeeDAO.save(employee);
+    }
+
+    @Override
+    public void deleteById(String id) {
+        employeeDAO.deleteById(id);
+    }
+
+    @Override
+    public Employee findById(String id) {
+      return employeeDAO.getOne(id);
+    }
+
+    @Override
+    public Employee update(Employee employee) {
+        return employeeDAO.saveAndFlush(employee);
+    }
+
+    /*private List<Employee> employees = Arrays.asList(
             new Employee("0000002", "Ivan", "Ivanov", "Ivan_Ivanov@corpmail.com", "0000002"),
             new Employee("0000003", "Ivan", "Ivanov", "Ivan_Ivanov@corpmail.com", "0000003"),
             new Employee("0000004", "Ivan", "Ivanov", "Ivan_Ivanov@corpmail.com", "0000004"),
@@ -36,5 +62,5 @@ public class EmployeeService {
                 .filter(employee -> StringUtils.equals(employee.getId(), id))
                 .findFirst()
                 .orElseThrow(() -> new NoEmployeeFoundException(format("No employee found for id: %s", id)));
-    }
+    }*/
 }

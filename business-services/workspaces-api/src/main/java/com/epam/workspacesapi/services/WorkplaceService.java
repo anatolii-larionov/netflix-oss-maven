@@ -1,21 +1,45 @@
 package com.epam.workspacesapi.services;
 
 import com.epam.commons.entity.Workspace;
-import com.epam.workspacesapi.exceptions.NoWorkplaceFoundException;
-import org.apache.commons.lang3.StringUtils;
+import com.epam.workspacesapi.repository.WorkspaceDAO;
+import com.epam.workspacesapi.services.interfaces.ServiceWorkspace;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static com.epam.commons.entity.OSFamily.*;
-import static com.google.common.collect.Lists.newArrayList;
-import static java.lang.String.format;
-import static java.util.UUID.randomUUID;
-
 @Service
-public class WorkplaceService {
+public class WorkplaceService implements ServiceWorkspace {
 
-    private final List<Workspace> workspaces = newArrayList(
+    @Autowired
+    private WorkspaceDAO workspaceDAO;
+
+    @Override
+    public List<Workspace> findAll() {
+        return workspaceDAO.findAll();
+    }
+
+    @Override
+    public Workspace add(Workspace workspace) {
+        return workspaceDAO.save(workspace);
+    }
+
+    @Override
+    public void deleteById(String id) {
+        workspaceDAO.deleteById(id);
+    }
+
+    @Override
+    public Workspace findById(String id) {
+        return workspaceDAO.getOne(id);
+    }
+
+    @Override
+    public Workspace update(Workspace workspace) {
+        return workspaceDAO.saveAndFlush(workspace);
+    }
+
+    /*private final List<Workspace> workspaces = Arrays.asList(
             new Workspace("0000001", 1, 1, randomUUID().toString(), WINDOWS),
             new Workspace("0000002", 1, 2, randomUUID().toString(), WINDOWS),
             new Workspace("0000003", 1, 3, randomUUID().toString(), WINDOWS),
@@ -38,5 +62,5 @@ public class WorkplaceService {
                 .filter(w -> StringUtils.equals(w.getId(), id))
                 .findFirst()
                 .orElseThrow(() -> new NoWorkplaceFoundException(format("No workspace found with id: %s", id)));
-    }
+    }*/
 }

@@ -1,0 +1,61 @@
+version: '3.6'
+services:
+
+  postgres:
+    image: postgres
+
+    ports:
+      - '5002:5432'
+    network_mode: bridge
+    container_name: postgres
+    environment:
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: '147258369'
+      POSTGRES_DB: 'postgres'
+
+  config:
+    image: "config-server:8888"
+    container_name: config_8888
+    restart: always
+    ports:
+      - 8888:8888
+
+  eureka-service-registry:
+    image: "eureka-server:8282"
+    container_name: eureka_8282
+    restart: always
+    ports:
+      - 8282:8282
+    environment:
+      spring.cloud.config.uri: http://config:8888
+
+  workspaces-api:
+    image: "workspace-api:9090"
+    container_name: workspaces_9090
+    restart: always
+    ports:
+      - 9090:9090
+      - 9091:9090
+    environment:
+      spring.cloud.config.uri: http://config:8888
+      eureka.client.serviceUrl.defaultZone: http://eureka-service-registry:8282/eureka
+
+  employees-api:
+    image: "employee-api:9092"
+    container_name: employess_9092
+    restart: always
+    ports:
+      - 9092:9092
+    environment:
+      spring.cloud.config.uri: http://config:8888
+      eureka.client.serviceUrl.defaultZone: http://eureka-service-registry:8282/eureka
+
+  sample-api-gateway:
+    image: "gateway-api:9094"
+    container_name: gateway_9094
+    restart: always
+    ports:
+      - 9094:9094
+    environment:
+      spring.cloud.config.uri: http://config:8888
+      eureka.client.serviceUrl.defaultZone: http://eureka-service-registry:8282/eureka
